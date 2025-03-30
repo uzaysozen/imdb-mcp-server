@@ -4,6 +4,7 @@
 [![Python 3.13](https://img.shields.io/badge/python-3.13-blue.svg)](https://www.python.org/downloads/)
 [![Docker](https://img.shields.io/badge/Docker-Available-blue.svg)](https://www.docker.com/)
 [![RapidAPI](https://img.shields.io/badge/RapidAPI-IMDb-orange.svg)](https://rapidapi.com/octopusteam-octopusteam-default/api/imdb236)
+[![smithery badge](https://smithery.ai/badge/@uzaysozen/imdb-mcp-server)](https://smithery.ai/server/@uzaysozen/imdb-mcp-server)
 
 A Python server implementing Model Context Protocol (MCP) for movie and TV show information using the IMDb API service.
 
@@ -154,6 +155,14 @@ Based on the search results, here are the 5 upcoming action movies that will be 
    - Description: A CIA cryptographer blackmails his agency into training him to pursue terrorists who killed his wife.
 
 ## Installation
+
+### Installing via Smithery
+
+To install IMDb Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@uzaysozen/imdb-mcp-server):
+
+```bash
+npx -y @smithery/cli install @uzaysozen/imdb-mcp-server --client claude
+```
 
 ### Option 1: Using Docker (Recommended)
 
