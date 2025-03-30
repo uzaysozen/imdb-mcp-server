@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3.10-alpine AS builder
+FROM python:3.13-slim AS builder
 
 WORKDIR /app
 
@@ -9,7 +9,7 @@ RUN python -m venv /opt/venv && \
     /opt/venv/bin/pip install --no-cache-dir --upgrade pip && \
     /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
 
-FROM python:3.10-alpine
+FROM python:3.13-slim
 
 COPY --from=builder /opt/venv /opt/venv
 
@@ -27,3 +27,7 @@ ENV PYTHONUNBUFFERED=1
 EXPOSE 8000
 
 ENTRYPOINT ["imdb-mcp-server"]
+
+LABEL maintainer="Uzay Sozen" \
+      version="1.0" \
+      description="IMDB MCP Server"
