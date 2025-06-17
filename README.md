@@ -1,5 +1,4 @@
 [![MseeP.ai Security Assessment Badge](https://mseep.net/pr/uzaysozen-imdb-mcp-server-badge.png)](https://mseep.ai/app/uzaysozen-imdb-mcp-server)
-
 # IMDb MCP Server
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -7,6 +6,8 @@
 [![Docker](https://img.shields.io/badge/Docker-Available-blue.svg)](https://www.docker.com/)
 [![RapidAPI](https://img.shields.io/badge/RapidAPI-IMDb-orange.svg)](https://rapidapi.com/octopusteam-octopusteam-default/api/imdb236)
 [![smithery badge](https://smithery.ai/badge/@uzaysozen/imdb-mcp-server)](https://smithery.ai/server/@uzaysozen/imdb-mcp-server)
+
+[![Verified on MseeP](https://mseep.ai/badge.svg)](https://mseep.ai/app/8ed9e57d-d9e7-4a5d-ab94-4113be3ee842)
 
 A Python server implementing Model Context Protocol (MCP) for movie and TV show information using the IMDb API service.
 
