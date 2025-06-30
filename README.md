@@ -9,6 +9,8 @@
 
 [![Verified on MseeP](https://mseep.ai/badge.svg)](https://mseep.ai/app/8ed9e57d-d9e7-4a5d-ab94-4113be3ee842)
 
+[Verified on MCP Review](https://mcpreview.com/mcp-servers/uzaysozen/imdb-mcp-server)
+
 A Python server implementing Model Context Protocol (MCP) for movie and TV show information using the IMDb API service.
 
 ## Table of Contents
