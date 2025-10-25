@@ -1,0 +1,11 @@
+[project]
+name = "imdb-mcp-server"
+version = "0.1.0"
+description = "A Python server implementing Model Context Protocol (MCP) for movie and TV show information using the IMDb API service"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "mcp[cli]>=1.19.0",
+    "requests>=2.32.5",
+    "smithery>=0.4.4",
+]

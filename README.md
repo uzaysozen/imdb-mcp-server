@@ -16,6 +16,7 @@ A Python server implementing Model Context Protocol (MCP) for movie and TV show 
 ## Table of Contents
 - [Overview](#overview)
 - [Features](#features)
+- [Requirements](#requirements)
 - [Configuration](#configuration)
 - [Tools](#tools)
   - [Search Tools](#search-tools)
@@ -29,6 +30,7 @@ A Python server implementing Model Context Protocol (MCP) for movie and TV show 
 - [Installation](#installation)
 - [Starting the Server](#starting-the-server)
 - [Technical Details](#technical-details)
+  - [Transport Modes](#transport-modes)
   - [Pagination System](#pagination-system)
   - [Caching System](#caching-system)
 - [Limitations](#limitations)
@@ -50,15 +52,27 @@ This server provides a comprehensive set of tools for accessing IMDb data throug
 - 🔜 Upcoming releases
 - 🔄 Efficient response caching system
 
+## Requirements
+
+- **Python**: 3.13 or higher
+- **Package Manager**: uv (recommended) or pip
+- **RapidAPI Account**: Required for IMDb API access
+
 ## Configuration
 
 This server requires an API key from RapidAPI for the IMDb API service:
 
 1. Create an account on [RapidAPI](https://rapidapi.com/)
 2. Subscribe to the [IMDb API](https://rapidapi.com/octopusteam-octopusteam-default/api/imdb236) on RapidAPI
-3. Set the environment variable:
-   ```
-   RAPID_API_KEY_IMDB=your_api_key_here
+3. Configure the API key using one of these methods:
+   
+   **Method 1: Smithery Configuration (for HTTP mode)**
+   - When installing via Smithery, provide your API key through the Smithery configuration system
+   - The key is passed per-request, allowing for multi-user scenarios
+   
+   **Method 2: Environment Variable (for stdio mode)**
+   ```bash
+   export RAPID_API_KEY_IMDB=your_api_key_here
    ```
 
 ## Tools
@@ -92,38 +106,38 @@ This server requires an API key from RapidAPI for the IMDb API service:
 
 | Tool | Description | Example |
 |------|-------------|---------|
-| **get_top_250_movies** | Get the top 250 movies from IMDb | `get_top_250_movies()` |
-| **get_top_box_office_us** | Get the US box office records | `get_top_box_office_us()` |
-| **get_most_popular_movies** | Get the most popular movies | `get_most_popular_movies()` |
+| **get_top_250_movies** | Get the top 250 movies from IMDb | `get_top_250_movies(start=0)` |
+| **get_top_box_office_us** | Get the US box office records | `get_top_box_office_us(start=0)` |
+| **get_most_popular_movies** | Get the most popular movies | `get_most_popular_movies(start=0)` |
 
 ### TV Shows Tools
 *Paginated (5 results per page)*
 
 | Tool | Description | Example |
 |------|-------------|---------|
-| **get_top_250_tv_shows** | Get the top 250 TV shows from IMDb | `get_top_250_tv_shows()` |
-| **get_most_popular_tv_shows** | Get the most popular TV shows | `get_most_popular_tv_shows()` |
+| **get_top_250_tv_shows** | Get the top 250 TV shows from IMDb | `get_top_250_tv_shows(start=0)` |
+| **get_most_popular_tv_shows** | Get the most popular TV shows | `get_most_popular_tv_shows(start=0)` |
 
 ### Upcoming Releases Tools
 *Paginated (5 results per page)*
 
 | Tool | Description | Example |
 |------|-------------|---------|
-| **get_upcoming_releases** | Get upcoming movie and TV show releases by country | `get_upcoming_releases(country_code="US", type="MOVIE")` |
-| **get_available_country_codes_for_upcoming_releases** | Get available country codes for upcoming releases | `get_available_country_codes_for_upcoming_releases()` |
+| **get_upcoming_releases** | Get upcoming movie and TV show releases by country | `get_upcoming_releases(country_code="US", type="MOVIE", start=0)` |
+| **get_country_codes_for_upcoming_releases** | Get available country codes for upcoming releases | `get_country_codes_for_upcoming_releases()` |
 
-### India Spotlight Tools (Paginated)
+### India Spotlight Tools
 *Paginated (5 results per page)*
 
 | Tool | Description | Example |
 |------|-------------|---------|
-| **get_top_rated_malayalam_movies** | Get top 50 rated Malayalam movies | `get_top_rated_malayalam_movies()` |
-| **get_upcoming_indian_movies** | Get most anticipated upcoming Indian movies | `get_upcoming_indian_movies()` |
-| **get_trending_tamil_movies** | Get trending Tamil movies | `get_trending_tamil_movies()` |
-| **get_trending_telugu_movies** | Get trending Telugu movies | `get_trending_telugu_movies()` |
-| **get_top_rated_tamil_movies** | Get top 50 rated Tamil movies | `get_top_rated_tamil_movies()` |
-| **get_top_rated_telugu_movies** | Get top 50 rated Telugu movies | `get_top_rated_telugu_movies()` |
-| **get_top_rated_indian_movies** | Get top 250 rated Indian movies | `get_top_rated_indian_movies()` |
+| **get_top_rated_malayalam_movies** | Get top 50 rated Malayalam movies | `get_top_rated_malayalam_movies(start=0)` |
+| **get_upcoming_indian_movies** | Get most anticipated upcoming Indian movies | `get_upcoming_indian_movies(start=0)` |
+| **get_trending_tamil_movies** | Get trending Tamil movies | `get_trending_tamil_movies(start=0)` |
+| **get_trending_telugu_movies** | Get trending Telugu movies | `get_trending_telugu_movies(start=0)` |
+| **get_top_rated_tamil_movies** | Get top 50 rated Tamil movies | `get_top_rated_tamil_movies(start=0)` |
+| **get_top_rated_telugu_movies** | Get top 50 rated Telugu movies | `get_top_rated_telugu_movies(start=0)` |
+| **get_top_rated_indian_movies** | Get top 250 rated Indian movies | `get_top_rated_indian_movies(start=0)` |
 
 ## Example Prompt and Response
 
@@ -161,7 +175,7 @@ Based on the search results, here are the 5 upcoming action movies that will be 
 
 ## Installation
 
-### Installing via Smithery
+### Installing via Smithery (Recommended)
 
 To install IMDb Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@uzaysozen/imdb-mcp-server):
 
@@ -169,7 +183,9 @@ To install IMDb Server for Claude Desktop automatically via [Smithery](https://s
 npx -y @smithery/cli install @uzaysozen/imdb-mcp-server --client claude
 ```
 
-### Option 1: Using Docker (Recommended)
+This will automatically configure the server with your RapidAPI key through Smithery's configuration system.
+
+### Option 1: Using Docker
 
 1. Clone this repository
 ```bash
@@ -177,33 +193,53 @@ git clone https://github.com/uzaysozen/imdb-mcp-server.git
 cd imdb-mcp-server
 ```
 
-2. Install dependencies
-```bash
-pip install -r requirements.txt
-```
-
-3. Build the Docker image
+2. Build the Docker image
 ```bash
 docker build -t imdb_server .
 ```
 
-4. Run the Docker container (ensure your API key is passed as an environment variable)
+3. Run the Docker container
 ```bash
-docker run -d -p 8000:8000 -e RAPID_API_KEY_IMDB=your_api_key_here --name imdb_server imdb_server
+docker run -d -p 8081:8081 -e RAPID_API_KEY_IMDB=your_api_key_here --name imdb_server imdb_server
 ```
 
-5. Add this to your `claude_desktop_config.json`:
+Note: The Docker container runs in HTTP mode by default on port 8081.
+
+### Option 2: Direct Python Execution (using uv)
+
+1. Clone this repository
+```bash
+git clone https://github.com/uzaysozen/imdb-mcp-server.git
+cd imdb-mcp-server
+```
+
+2. Install uv (if not already installed)
+```bash
+# On macOS and Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# On Windows
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+3. Install dependencies using uv
+```bash
+uv sync
+```
+
+4. Add this to your `claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "imdb_server": {
-      "command": "docker",
+      "command": "uv",
       "args": [
-        "exec",
-        "-i",
-        "imdb_server",
-        "imdb-mcp-server"
+        "--directory",
+        "/path/to/imdb-mcp-server",
+        "run",
+        "python",
+        "src/main.py"
       ],
       "env": {
         "RAPID_API_KEY_IMDB": "your_api_key_here"
@@ -213,7 +249,7 @@ docker run -d -p 8000:8000 -e RAPID_API_KEY_IMDB=your_api_key_here --name imdb_s
 }
 ```
 
-### Option 2: Direct Python Execution
+### Option 3: Direct Python Execution (using pip)
 
 1. Clone this repository
 ```bash
@@ -223,23 +259,18 @@ cd imdb-mcp-server
 
 2. Install dependencies
 ```bash
-pip install -r requirements.txt
+pip install mcp[cli] requests smithery
 ```
 
-3. Set the API key environment variable
-```bash
-export RAPID_API_KEY_IMDB=your_api_key_here
-```
-
-4. Add this to your `claude_desktop_config.json`, adjusting the Python path as needed:
+3. Add this to your `claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "imdb_server": {
-      "command": "/path/to/your/python",
+      "command": "python",
       "args": [
-        "/path/to/imdb_server.py"
+        "/path/to/imdb-mcp-server/src/main.py"
       ],
       "env": {
         "RAPID_API_KEY_IMDB": "your_api_key_here"
@@ -251,15 +282,22 @@ export RAPID_API_KEY_IMDB=your_api_key_here
 
 ## Starting the Server
 
+### Stdio Mode (Default for local development)
 ```bash
-# Start the server directly
-python imdb_server.py
+# Using uv
+uv run python src/main.py
 
-# Or using MCP CLI
-mcp run imdb_server.py
+# Or directly with Python
+python src/main.py
+```
 
-# Or if using Docker, the server starts automatically with the container
-docker run -d -p 8000:8000 -e RAPID_API_KEY_IMDB=your_api_key_here --name imdb_server imdb_server
+### HTTP Mode (Used by Docker and Smithery)
+```bash
+# Set the transport mode and run
+TRANSPORT=http python src/main.py
+
+# With custom port
+TRANSPORT=http PORT=8081 python src/main.py
 ```
 
 After adding your chosen configuration, restart Claude Desktop to load the IMDb server. You'll then be able to use all the movie and TV show data tools in your conversations with Claude.
@@ -267,12 +305,27 @@ After adding your chosen configuration, restart Claude Desktop to load the IMDb 
 ## Technical Details
 
 The server is built on:
-- IMDb API via RapidAPI
-- MCP for API interface
-- Requests for API communication
-- FastMCP for server implementation
-- Custom in-memory caching system
-- Smart pagination that limits results to 5 items per request, optimizing for AI agent consumption
+- **Python 3.13+**: Modern Python runtime
+- **FastMCP**: Server implementation with HTTP and stdio transport support
+- **IMDb API via RapidAPI**: Primary data source
+- **Requests**: API communication library
+- **Smithery**: Configuration and deployment management
+- **uv**: Fast Python package manager and runner
+- **Custom in-memory caching system**: Optimized response caching with LRU eviction
+- **Smart pagination**: Limits results to 5 items per request, optimizing for AI agent consumption
+
+### Transport Modes
+
+The server supports two transport modes:
+
+1. **Stdio Mode** (Default): Traditional MCP server communication via standard input/output
+   - Used for local Claude Desktop installations
+   - Configured via environment variables (`RAPID_API_KEY_IMDB`)
+
+2. **HTTP Mode**: RESTful HTTP transport with CORS support
+   - Used for Docker deployments and Smithery
+   - Supports per-request configuration via Smithery config system
+   - Runs on port 8081 by default (configurable via `PORT` environment variable)
 
 ### Pagination System
 
@@ -313,11 +366,15 @@ The server implements an efficient caching system to improve performance and red
 
 #### Configuration
 
-The cache size and expiration time can be adjusted in the code:
+The cache size and expiration time can be adjusted in `src/main.py`:
 
 ```python
-# Default are 600 seconds (10 minutes) and 100 cache keys
-response_cache = ResponseCache(expiry_seconds=120, max_size=50)
+# Defaults: 600 seconds (10 minutes) and 100 cache keys
+# You can customize by modifying the ResponseCache instantiation:
+response_cache = ResponseCache(max_size=100, expiry_seconds=600)
+
+# Example with custom values:
+# response_cache = ResponseCache(max_size=50, expiry_seconds=120)
 ```
 
 ## Limitations
@@ -332,11 +389,14 @@ response_cache = ResponseCache(expiry_seconds=120, max_size=50)
 
 | Problem | Solution |
 |---------|----------|
-| API key not recognized | Ensure the RAPID_API_KEY_IMDB environment variable is properly set |
-| Rate limit exceeded | Check your RapidAPI subscription tier and limits |
-| Timeout errors | The server has a 30-second timeout; for large requests, try limiting parameters |
+| API key not recognized | **Stdio mode**: Ensure the `RAPID_API_KEY_IMDB` environment variable is properly set. **HTTP mode**: Verify the `rapidApiKeyImdb` is provided in the Smithery configuration |
+| Rate limit exceeded | Check your RapidAPI subscription tier and limits at [RapidAPI Dashboard](https://rapidapi.com/developer/dashboard) |
+| Timeout errors | The server has a 30-second timeout; for large requests, try limiting parameters or using pagination |
 | Empty results | Try broader search terms or check if the content exists in IMDb's database |
 | High memory usage | If running for extended periods with many unique queries, restart the server occasionally to clear the cache |
+| Port already in use | Change the port using the `PORT` environment variable (HTTP mode only): `PORT=8082 python src/main.py` |
+| Import errors | Ensure all dependencies are installed: `uv sync` or `pip install mcp[cli] requests smithery` |
+| Connection refused (Docker) | Ensure the container is running: `docker ps` and check the logs: `docker logs imdb_server` |
 
 ## License
 

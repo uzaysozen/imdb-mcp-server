@@ -1,25 +1,17 @@
-# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
-
+# smithery.yaml
+runtime: "container"
+build:
+  dockerfile: "Dockerfile"           # Path to your Dockerfile
+  dockerBuildPath: "."               # Docker build context
 startCommand:
-  type: stdio
-  configSchema:
-    # JSON Schema defining the configuration options for the MCP.
+  type: "http"
+  # configSchema and exampleConfig are optional - remove if no configuration needed
+  configSchema:                      # Optional: Define configuration schema
     type: object
-    required:
-      - rapidApiKeyImdb
+    required: [rapidApiKeyImdb]
     properties:
       rapidApiKeyImdb:
         type: string
         description: RapidAPI API key for accessing the IMDb API
-  commandFunction:
-    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
-    |-
-    (config) => ({
-      command: 'imdb-mcp-server',
-      args: [],
-      env: {
-        RAPID_API_KEY_IMDB: config.rapidApiKeyImdb
-      }
-    })
-  exampleConfig:
-    rapidApiKeyImdb: your_api_key_here
+  exampleConfig:                     # Optional: Example configuration
+    rapidApiKeyImdb: "your_api_key_here"
