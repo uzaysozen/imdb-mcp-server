@@ -238,39 +238,7 @@ uv sync
         "--directory",
         "/path/to/imdb-mcp-server",
         "run",
-        "python",
-        "src/main.py"
-      ],
-      "env": {
-        "RAPID_API_KEY_IMDB": "your_api_key_here"
-      }
-    }
-  }
-}
-```
-
-### Option 3: Direct Python Execution (using pip)
-
-1. Clone this repository
-```bash
-git clone https://github.com/uzaysozen/imdb-mcp-server.git
-cd imdb-mcp-server
-```
-
-2. Install dependencies
-```bash
-pip install mcp[cli] requests smithery
-```
-
-3. Add this to your `claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "imdb_server": {
-      "command": "python",
-      "args": [
-        "/path/to/imdb-mcp-server/src/main.py"
+        "imdb-server"
       ],
       "env": {
         "RAPID_API_KEY_IMDB": "your_api_key_here"
@@ -284,20 +252,23 @@ pip install mcp[cli] requests smithery
 
 ### Stdio Mode (Default for local development)
 ```bash
-# Using uv
-uv run python src/main.py
+# Using uv (recommended)
+uv run imdb-server
 
-# Or directly with Python
-python src/main.py
+# Or directly with Python module
+python -m imdb_mcp_server
 ```
 
 ### HTTP Mode (Used by Docker and Smithery)
 ```bash
-# Set the transport mode and run
-TRANSPORT=http python src/main.py
+# Using uv
+TRANSPORT=http uv run imdb-server
+
+# Or with Python module
+TRANSPORT=http python -m imdb_mcp_server
 
 # With custom port
-TRANSPORT=http PORT=8081 python src/main.py
+TRANSPORT=http PORT=8081 uv run imdb-server
 ```
 
 After adding your chosen configuration, restart Claude Desktop to load the IMDb server. You'll then be able to use all the movie and TV show data tools in your conversations with Claude.

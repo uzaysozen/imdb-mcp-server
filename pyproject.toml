@@ -18,6 +18,7 @@ dependencies = [
 [project.scripts]
 dev = "smithery.cli.dev:main"
 playground = "smithery.cli.playground:main"
+imdb-server = "imdb_mcp_server.main:main"
 
 [tool.smithery]
 server = "imdb_mcp_server.main:create_server"

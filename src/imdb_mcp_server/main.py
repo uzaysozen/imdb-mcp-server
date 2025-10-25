@@ -62,7 +62,7 @@ def main():
         
         # Run with stdio transport (default)
         api_key = os.getenv("RAPID_API_KEY_IMDB")
-        print(f"API key: {api_key}")
+
         server.run()
 
 
