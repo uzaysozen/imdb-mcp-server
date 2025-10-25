@@ -177,10 +177,10 @@ Based on the search results, here are the 5 upcoming action movies that will be 
 
 ### Installing via Smithery (Recommended)
 
-To install IMDb Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@uzaysozen/imdb-mcp-server):
+To install IMDb Server automatically via [Smithery](https://smithery.ai/server/@uzaysozen/imdb-mcp-server):
 
 ```bash
-npx -y @smithery/cli install @uzaysozen/imdb-mcp-server --client claude
+npx -y @smithery/cli install @uzaysozen/imdb-mcp-server
 ```
 
 This will automatically configure the server with your RapidAPI key through Smithery's configuration system.
