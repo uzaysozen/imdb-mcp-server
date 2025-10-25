@@ -1,6 +1,6 @@
 # Dockerfile
 # Use a Python image with uv pre-installed
-FROM ghcr.io/astral-sh/uv:python3.12-alpine
+FROM ghcr.io/astral-sh/uv:python3.13-alpine
 
 # Install the project into `/app`
 WORKDIR /app
@@ -26,11 +26,12 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Set transport mode to HTTP
+# Set transport mode to HTTP and default port
 ENV TRANSPORT=http
+ENV PORT=8081
 
 # Reset the entrypoint, don't invoke `uv`
 ENTRYPOINT []
 
 # Run the application directly using the venv Python
-CMD ["python", "src/main.py"]
+CMD ["python", "-m", "imdb_mcp_server.main"]
