@@ -1,8 +1,9 @@
 import json
+import os
 from typing import Any, Dict, Optional
 import requests
+from mcp.server.fastmcp import Context
 
-from .config import config_manager
 from .cache import cache_manager
 
 
@@ -10,7 +11,7 @@ from .cache import cache_manager
 BASE_URL = "https://imdb236.p.rapidapi.com/api/imdb"
 
 
-async def make_imdb_request(url: str, querystring: dict[str, Any]) -> Optional[Dict[str, Any]]:
+async def make_imdb_request(url: str, querystring: dict[str, Any], ctx: Optional[Context] = None) -> Optional[Dict[str, Any]]:
     """Make a request to the IMDb API with proper error handling and caching."""
     
     # Check if it's time to clean the cache
@@ -24,8 +25,13 @@ async def make_imdb_request(url: str, querystring: dict[str, Any]) -> Optional[D
     if cached_data:
         return cached_data
     
-    # Get API key from request context or fallback to global variable
-    api_key = config_manager.get_api_key()
+    # Get API key from session config or fallback to environment variable
+    api_key = None
+    if ctx and hasattr(ctx, 'session_config') and ctx.session_config:
+        api_key = ctx.session_config.rapidApiKeyImdb
+    
+    if not api_key:
+        api_key = os.getenv("RAPID_API_KEY_IMDB")
     
     # Not in cache, make the request
     headers = {

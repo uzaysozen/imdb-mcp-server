@@ -1,3 +1,7 @@
+[build-system]
+requires = ["uv_build>=0.8.15,<0.9.0"]
+build-backend = "uv_build"
+
 [project]
 name = "imdb-mcp-server"
 version = "0.1.0"
@@ -8,4 +12,12 @@ dependencies = [
     "mcp[cli]>=1.19.0",
     "requests>=2.32.5",
     "smithery>=0.4.4",
+    "uvicorn>=0.24.0",
 ]
+
+[project.scripts]
+dev = "smithery.cli.dev:main"
+playground = "smithery.cli.playground:main"
+
+[tool.smithery]
+server = "imdb_mcp_server.main:create_server"

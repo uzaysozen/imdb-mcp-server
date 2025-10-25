@@ -171,11 +171,12 @@ wheels = [
 [[package]]
 name = "imdb-mcp-server"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "mcp", extra = ["cli"] },
     { name = "requests" },
     { name = "smithery" },
+    { name = "uvicorn" },
 ]
 
 [package.metadata]
@@ -183,6 +184,7 @@ requires-dist = [
     { name = "mcp", extras = ["cli"], specifier = ">=1.19.0" },
     { name = "requests", specifier = ">=2.32.5" },
     { name = "smithery", specifier = ">=0.4.4" },
+    { name = "uvicorn", specifier = ">=0.24.0" },
 ]
 
 [[package]]
