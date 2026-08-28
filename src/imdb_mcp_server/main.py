@@ -1,68 +1,54 @@
 import os
-import sys
 import signal
-from pydantic import BaseModel, Field
-from mcp.server.fastmcp import FastMCP
-from smithery.decorators import smithery
+import sys
+from importlib.metadata import PackageNotFoundError, version
+
+from mcp.server.mcpserver import MCPServer
+
 from .tools import register_tools
 
+try:
+    __version__ = version("imdb-mcp-server")
+except PackageNotFoundError:  # running from a source tree that isn't installed
+    __version__ = "0.0.0"
 
-# Configuration schema for session
-class ConfigSchema(BaseModel):
-    rapidApiKeyImdb: str = Field(..., description="RapidAPI API key for accessing the IMDb API")
 
-
-@smithery.server(config_schema=ConfigSchema)
-def create_server():
-    """Create and configure the MCP server."""
-    
-    # Create your FastMCP server as usual
-    server = FastMCP("IMDb MCP Server")
-    
-    # Register all tools with the server
+def create_server() -> MCPServer:
+    """Create and configure the IMDb MCP server."""
+    server = MCPServer("IMDb MCP Server", version=__version__)
     register_tools(server)
-    
     return server
 
 
-# Handle SIGINT (Ctrl+C) gracefully
-def signal_handler(sig, frame):
-    print("Shutting down server gracefully...")
+def _handle_sigint(sig, frame):
+    # Diagnostics go to stderr so they never corrupt the stdio JSON-RPC stream.
+    print("Shutting down server gracefully...", file=sys.stderr)
     sys.exit(0)
 
-signal.signal(signal.SIGINT, signal_handler)
 
+def main() -> None:
+    signal.signal(signal.SIGINT, _handle_sigint)
 
-def main():
-    transport_mode = os.getenv("TRANSPORT", "stdio")
-    
-    if transport_mode == "http":
-        # HTTP mode - Smithery handles the server creation and configuration
-        print("IMDb MCP Server starting in HTTP mode...")
-        
-        # Get the server from Smithery decorator
-        server = create_server()
+    server = create_server()
 
-        # Use Smithery-required PORT environment variable
-        port = int(os.environ.get("PORT", 8081))
-        print(f"Listening on port {port}")
+    if not os.getenv("RAPID_API_KEY_IMDB"):
+        print(
+            "Warning: RAPID_API_KEY_IMDB is not set. Tool calls will fail until it is configured.",
+            file=sys.stderr,
+        )
 
-        # Smithery handles the HTTP app setup and CORS automatically
-        import uvicorn
-        app = server.streamable_http_app()
-        uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
-    
+    if os.getenv("TRANSPORT", "stdio") == "http":
+        # Self-hosted HTTP mode. Auth is the RAPID_API_KEY_IMDB env var on the
+        # server; put the process behind a proxy that terminates TLS.
+        host = os.getenv("HOST", "0.0.0.0")
+        port = int(os.getenv("PORT", "8081"))
+        print(
+            f"IMDb MCP Server starting in HTTP mode on {host}:{port} (MCP endpoint: /mcp)",
+            file=sys.stderr,
+        )
+        server.run(transport="streamable-http", host=host, port=port)
     else:
-        # Stdio mode for backwards compatibility
-        print("IMDb MCP Server starting in stdio mode...")
-        
-        # Create server without Smithery decorator for stdio mode
-        server = FastMCP("IMDb MCP Server")
-        register_tools(server)
-        
-        # Run with stdio transport (default)
-        api_key = os.getenv("RAPID_API_KEY_IMDB")
-
+        print("IMDb MCP Server starting in stdio mode...", file=sys.stderr)
         server.run()
 
 

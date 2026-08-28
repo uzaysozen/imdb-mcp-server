@@ -9,16 +9,9 @@ description = "A Python server implementing Model Context Protocol (MCP) for mov
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "mcp[cli]>=1.19.0,<2",
+    "mcp[cli]>=2.1.1,<3",
     "requests>=2.32.5",
-    "smithery>=0.4.4",
-    "uvicorn>=0.24.0",
 ]
 
 [project.scripts]
-dev = "smithery.cli.dev:main"
-playground = "smithery.cli.playground:main"
 imdb-server = "imdb_mcp_server.main:main"
-
-[tool.smithery]
-server = "imdb_mcp_server.main:create_server"
