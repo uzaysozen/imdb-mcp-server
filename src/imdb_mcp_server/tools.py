@@ -1,6 +1,5 @@
 import json
-from typing import Any, Dict, List, Literal, Optional
-from mcp.server.fastmcp import Context
+from typing import List, Literal, Optional
 
 from .api import make_imdb_request, paginated_response, BASE_URL
 
@@ -12,7 +11,6 @@ def register_tools(mcp):
     
     @mcp.tool()     
     async def search_imdb(
-        ctx: Context,
         original_title: Optional[str] = None,
         original_title_autocomplete: Optional[str] = None,
         primary_title: Optional[str] = None,
@@ -73,7 +71,7 @@ def register_tools(mcp):
                                                            "countriesOfOrigin": countries_of_origin,
                                                            "spokenLanguages": spoken_languages,
                                                            "sortOrder": sort_order,
-                                                           "sortField": sort_field}, ctx)
+                                                           "sortField": sort_field})
         if not search_data or not search_data.get("results", []):
             return "Unable to fetch search data for this movie or movie not found."
         
@@ -84,7 +82,7 @@ def register_tools(mcp):
     # -----------------------------IMDB ID TOOLS-----------------------------------
 
     @mcp.tool()
-    async def get_imdb_details(imdb_id: str, ctx: Context) -> str:
+    async def get_imdb_details(imdb_id: str) -> str:
         """Get more in depth details about a movie/series from IMDb.
         Args:
             imdbId: The IMDb ID of the movie/series to get details for.
@@ -92,14 +90,14 @@ def register_tools(mcp):
             JSON object containing the movie/series details.
         """
         imdb_details_url = f"{BASE_URL}/{imdb_id}"
-        imdb_details_data = await make_imdb_request(imdb_details_url, {}, ctx)
+        imdb_details_data = await make_imdb_request(imdb_details_url, {})
         if not imdb_details_data:
             return "Unable to fetch imdb details data for this movie or movie not found."
         return json.dumps(imdb_details_data, indent=4)
 
 
     @mcp.tool()
-    async def get_directors(imdb_id: str, ctx: Context) -> str:
+    async def get_directors(imdb_id: str) -> str:
         """Get the directors of a movie from IMDb.
         Args:
             imdbId: The IMDb ID of the movie to get directors for.
@@ -107,14 +105,14 @@ def register_tools(mcp):
             JSON object containing the directors of the movie.
         """
         directors_url = f"{BASE_URL}/{imdb_id}/directors"
-        directors_data = await make_imdb_request(directors_url, {}, ctx)
+        directors_data = await make_imdb_request(directors_url, {})
         if not directors_data:
             return "Unable to fetch directors data for this movie or movie not found."
         return json.dumps(directors_data, indent=4)
 
         
     @mcp.tool()
-    async def get_cast(imdb_id: str, ctx: Context) -> str:
+    async def get_cast(imdb_id: str) -> str:
         """Get the cast of a movie from IMDb.
         Args:
             imdbId: The IMDb ID of the movie to get cast for.
@@ -122,14 +120,14 @@ def register_tools(mcp):
             JSON object containing the cast of the movie.
         """
         cast_url = f"{BASE_URL}/{imdb_id}/cast"
-        cast_data = await make_imdb_request(cast_url, {}, ctx)
+        cast_data = await make_imdb_request(cast_url, {})
         if not cast_data:
             return "Unable to fetch cast data for this movie or movie not found."
         return json.dumps(cast_data, indent=4)
 
 
     @mcp.tool()
-    async def get_writers(imdb_id: str, ctx: Context) -> str:
+    async def get_writers(imdb_id: str) -> str:
         """Get the writers of a movie from IMDb.
         Args:
             imdbId: The IMDb ID of the movie to get writers for.
@@ -137,7 +135,7 @@ def register_tools(mcp):
             JSON object containing the writers of the movie.
         """
         writers_url = f"{BASE_URL}/{imdb_id}/writers"
-        writers_data = await make_imdb_request(writers_url, {}, ctx)
+        writers_data = await make_imdb_request(writers_url, {})
         if not writers_data:
             return "Unable to fetch writers data for this movie or movie not found."
         return json.dumps(writers_data, indent=4)
@@ -146,51 +144,51 @@ def register_tools(mcp):
     # -----------------------------CONFIGURATION TOOLS-----------------------------------
 
     @mcp.tool()
-    async def get_types(ctx: Context) -> str:
+    async def get_types() -> str:
         """Get all types.
         Returns:
             JSON object containing all types.
         """
         types_url = f"{BASE_URL}/types"
-        types_data = await make_imdb_request(types_url, {}, ctx)
+        types_data = await make_imdb_request(types_url, {})
         if not types_data:
             return "Unable to fetch types data."
         return json.dumps(types_data, indent=4)
 
     @mcp.tool()
-    async def get_genres(ctx: Context) -> str:
+    async def get_genres() -> str:
         """Get all genres.
         Returns:
             JSON object containing all genres.
         """
         genres_url = f"{BASE_URL}/genres"
-        genres_data = await make_imdb_request(genres_url, {}, ctx)
+        genres_data = await make_imdb_request(genres_url, {})
         if not genres_data:
             return "Unable to fetch genres data."
         return json.dumps(genres_data, indent=4)
 
 
     @mcp.tool()
-    async def get_countries(ctx: Context) -> str:
+    async def get_countries() -> str:
         """Get all countries.
         Returns:
             JSON object containing all countries.
         """
         countries_url = f"{BASE_URL}/countries"
-        countries_data = await make_imdb_request(countries_url, {}, ctx)
+        countries_data = await make_imdb_request(countries_url, {})
         if not countries_data:
             return "Unable to fetch countries data."
         return json.dumps(countries_data, indent=4)
 
 
     @mcp.tool()
-    async def get_languages(ctx: Context) -> str:
+    async def get_languages() -> str:
         """Get all languages.
         Returns:
             JSON object containing all languages.
         """
         languages_url = f"{BASE_URL}/languages"
-        languages_data = await make_imdb_request(languages_url, {}, ctx)
+        languages_data = await make_imdb_request(languages_url, {})
         if not languages_data:
             return "Unable to fetch languages data."
         return json.dumps(languages_data, indent=4)
@@ -199,7 +197,7 @@ def register_tools(mcp):
     # -----------------------------MOVIES TOOLS-----------------------------------
 
     @mcp.tool()
-    async def get_top_250_movies(start: int, ctx: Context) -> str:
+    async def get_top_250_movies(start: int) -> str:
         """Get the top 250 movies from IMDb with pagination.
         Args:
             start: The starting index (0-based) to retrieve movies from.
@@ -207,14 +205,14 @@ def register_tools(mcp):
             JSON object containing 5 top movies starting from the specified index.
         """
         top_250_url = f"{BASE_URL}/top250-movies"
-        top_250_data = await make_imdb_request(top_250_url, {}, ctx)
+        top_250_data = await make_imdb_request(top_250_url, {})
         if not top_250_data:
             return "Unable to fetch top 250 movies data."
         return json.dumps(paginated_response(top_250_data, start, len(top_250_data)), indent=4)
 
 
     @mcp.tool()
-    async def get_top_box_office_us(start: int, ctx: Context) -> str:
+    async def get_top_box_office_us(start: int) -> str:
         """Get the top box office data for the US from IMDb with pagination.
         Args:
             start: The starting index (0-based) to retrieve movies from.
@@ -222,14 +220,14 @@ def register_tools(mcp):
             JSON object containing 5 top box office movies starting from the specified index.
         """
         box_office_us_url = f"{BASE_URL}/top-box-office"
-        box_office_us_data = await make_imdb_request(box_office_us_url, {}, ctx)
+        box_office_us_data = await make_imdb_request(box_office_us_url, {})
         if not box_office_us_data:
             return "Unable to fetch box office data for the US."
         return json.dumps(paginated_response(box_office_us_data, start, len(box_office_us_data)), indent=4)
 
 
     @mcp.tool()
-    async def get_most_popular_movies(start: int, ctx: Context) -> str:
+    async def get_most_popular_movies(start: int) -> str:
         """Get the most popular movies from IMDb with pagination.
         Args:
             start: The starting index (0-based) to retrieve movies from.
@@ -237,7 +235,7 @@ def register_tools(mcp):
             JSON object containing 5 most popular movies starting from the specified index.
         """
         most_popular_movies_url = f"{BASE_URL}/most-popular-movies"
-        most_popular_movies_data = await make_imdb_request(most_popular_movies_url, {}, ctx) 
+        most_popular_movies_data = await make_imdb_request(most_popular_movies_url, {}) 
         if not most_popular_movies_data:
             return "Unable to fetch most popular movies data."
         return json.dumps(paginated_response(most_popular_movies_data, start, len(most_popular_movies_data)), indent=4)
@@ -246,7 +244,7 @@ def register_tools(mcp):
     # -----------------------------TV SHOWS TOOLS-----------------------------------
 
     @mcp.tool()
-    async def get_top_250_tv_shows(start: int, ctx: Context) -> str:
+    async def get_top_250_tv_shows(start: int) -> str:
         """Get the top 250 TV shows from IMDb with pagination.
         Args:
             start: The starting index (0-based) to retrieve TV shows from.
@@ -254,14 +252,14 @@ def register_tools(mcp):
             JSON object containing 5 top TV shows starting from the specified index.
         """
         top_250_tv_shows_url = f"{BASE_URL}/top250-tv"
-        top_250_tv_shows_data = await make_imdb_request(top_250_tv_shows_url, {}, ctx)
+        top_250_tv_shows_data = await make_imdb_request(top_250_tv_shows_url, {})
         if not top_250_tv_shows_data:
             return "Unable to fetch top 250 TV shows data."
         return json.dumps(paginated_response(top_250_tv_shows_data, start, len(top_250_tv_shows_data)), indent=4)
 
 
     @mcp.tool()
-    async def get_most_popular_tv_shows(start: int, ctx: Context) -> str:
+    async def get_most_popular_tv_shows(start: int) -> str:
         """Get the most popular TV shows from IMDb with pagination.
         Args:
             start: The starting index (0-based) to retrieve TV shows from.
@@ -269,7 +267,7 @@ def register_tools(mcp):
             JSON object containing 5 most popular TV shows starting from the specified index.
         """
         most_popular_tv_shows_url = f"{BASE_URL}/most-popular-tv"
-        most_popular_tv_shows_data = await make_imdb_request(most_popular_tv_shows_url, {}, ctx)
+        most_popular_tv_shows_data = await make_imdb_request(most_popular_tv_shows_url, {})
         if not most_popular_tv_shows_data:
             return "Unable to fetch most popular TV shows data."
         return json.dumps(paginated_response(most_popular_tv_shows_data, start, len(most_popular_tv_shows_data)), indent=4)
@@ -278,7 +276,7 @@ def register_tools(mcp):
     # -----------------------------UPCOMING RELEASES TOOLS-----------------------------------
 
     @mcp.tool()
-    async def get_upcoming_releases(country_code: str, type: str, start: int, ctx: Context) -> str:
+    async def get_upcoming_releases(country_code: str, type: str, start: int) -> str:
         """Get the upcoming releases from IMDb with pagination.
         Args:
             country_code: The country code to get the upcoming releases for.
@@ -288,20 +286,20 @@ def register_tools(mcp):
             JSON object containing 5 upcoming releases starting from the specified index.
         """
         upcoming_releases_url = f"{BASE_URL}/upcoming-releases"
-        upcoming_releases_data = await make_imdb_request(upcoming_releases_url, {"countryCode": country_code, "type": type}, ctx)
+        upcoming_releases_data = await make_imdb_request(upcoming_releases_url, {"countryCode": country_code, "type": type})
         if not upcoming_releases_data:
             return "Unable to fetch upcoming releases data."
         return json.dumps(paginated_response(upcoming_releases_data, start, len(upcoming_releases_data)), indent=4)
 
 
     @mcp.tool()
-    async def get_country_codes_for_upcoming_releases(ctx: Context) -> str:
+    async def get_country_codes_for_upcoming_releases() -> str:
         """Get the available country codes for upcoming releases from IMDb.
         Returns:
             JSON object containing the available country codes for upcoming releases.
         """
         available_country_codes_url = f"{BASE_URL}/upcoming-releases-country-codes"
-        available_country_codes_data = await make_imdb_request(available_country_codes_url, {}, ctx)
+        available_country_codes_data = await make_imdb_request(available_country_codes_url, {})
         if not available_country_codes_data:
             return "Unable to fetch available country codes for upcoming releases data."
         return json.dumps(available_country_codes_data, indent=4)
@@ -310,7 +308,7 @@ def register_tools(mcp):
     # -----------------------------INDIA SPOTLIGHT TOOLS-----------------------------------
 
     @mcp.tool()
-    async def get_top_rated_malayalam_movies(start: int, ctx: Context) -> str:
+    async def get_top_rated_malayalam_movies(start: int) -> str:
         """Top 50 Malayalam movies as rated by the IMDb users.
         Args:
             start: The starting index (0-based) to retrieve movies from.
@@ -318,17 +316,17 @@ def register_tools(mcp):
             JSON object containing 5 top rated Malayalam movies starting from the specified index.
         """
         top_rated_malayalam_movies_url = f"{BASE_URL}/india/top-rated-malayalam-movies"
-        top_rated_malayalam_movies_data = await make_imdb_request(top_rated_malayalam_movies_url, {}, ctx)
+        top_rated_malayalam_movies_data = await make_imdb_request(top_rated_malayalam_movies_url, {})
         if not top_rated_malayalam_movies_data:
             return "Unable to fetch top rated Malayalam movies data."
-        
-        # Use paginated response helper with fixed page size
-        movies = top_rated_malayalam_movies_data.get("items", [])
+
+        # The API returns a bare list, like the other India Spotlight endpoints.
+        movies = top_rated_malayalam_movies_data
         return json.dumps(paginated_response(movies, start, len(movies)), indent=4)
 
 
     @mcp.tool()
-    async def get_upcoming_indian_movies(start: int, ctx: Context) -> str:
+    async def get_upcoming_indian_movies(start: int) -> str:
         """Get the most anticipated Indian movies on IMDb based on real-time popularity.
         Args:
             start: The starting index (0-based) to retrieve movies from.
@@ -336,14 +334,14 @@ def register_tools(mcp):
             JSON object containing 5 most anticipated Indian movies starting from the specified index.
         """
         upcoming_indian_movies_url = f"{BASE_URL}/india/upcoming"
-        upcoming_indian_movies_data = await make_imdb_request(upcoming_indian_movies_url, {}, ctx)
+        upcoming_indian_movies_data = await make_imdb_request(upcoming_indian_movies_url, {})
         if not upcoming_indian_movies_data:
             return "Unable to fetch upcoming Indian movies data."
         return json.dumps(paginated_response(upcoming_indian_movies_data, start, len(upcoming_indian_movies_data)), indent=4)
 
 
     @mcp.tool()
-    async def get_trending_tamil_movies(start: int, ctx: Context) -> str:
+    async def get_trending_tamil_movies(start: int) -> str:
         """Get the trending Tamil movies on IMDb.
         Args:
             start: The starting index (0-based) to retrieve movies from.
@@ -351,14 +349,14 @@ def register_tools(mcp):
             JSON object containing 5 trending Tamil movies starting from the specified index.
         """
         trending_tamil_movies_url = f"{BASE_URL}/india/trending-tamil"
-        trending_tamil_movies_data = await make_imdb_request(trending_tamil_movies_url, {}, ctx)
+        trending_tamil_movies_data = await make_imdb_request(trending_tamil_movies_url, {})
         if not trending_tamil_movies_data:
             return "Unable to fetch trending Tamil movies data."
         return json.dumps(paginated_response(trending_tamil_movies_data, start, len(trending_tamil_movies_data)), indent=4)
 
 
     @mcp.tool()
-    async def get_trending_telugu_movies(start: int, ctx: Context) -> str:
+    async def get_trending_telugu_movies(start: int) -> str:
         """Get the trending Telugu movies on IMDb.
         Args:
             start: The starting index (0-based) to retrieve movies from.
@@ -366,14 +364,14 @@ def register_tools(mcp):
             JSON object containing 5 trending Telugu movies starting from the specified index.
         """
         trending_telugu_movies_url = f"{BASE_URL}/india/trending-telugu"
-        trending_telugu_movies_data = await make_imdb_request(trending_telugu_movies_url, {}, ctx)
+        trending_telugu_movies_data = await make_imdb_request(trending_telugu_movies_url, {})
         if not trending_telugu_movies_data:
             return "Unable to fetch trending Telugu movies data."
         return json.dumps(paginated_response(trending_telugu_movies_data, start, len(trending_telugu_movies_data)), indent=4)
 
 
     @mcp.tool()
-    async def get_top_rated_tamil_movies(start: int, ctx: Context) -> str:
+    async def get_top_rated_tamil_movies(start: int) -> str:
         """Top 50 rated Tamil movies on IMDb.
         Args:
             start: The starting index (0-based) to retrieve movies from.
@@ -381,14 +379,14 @@ def register_tools(mcp):
             JSON object containing 5 top rated Tamil movies starting from the specified index.
         """
         top_rated_tamil_movies_url = f"{BASE_URL}/india/top-rated-tamil-movies"
-        top_rated_tamil_movies_data = await make_imdb_request(top_rated_tamil_movies_url, {}, ctx)
+        top_rated_tamil_movies_data = await make_imdb_request(top_rated_tamil_movies_url, {})
         if not top_rated_tamil_movies_data:
             return "Unable to fetch top rated Tamil movies data."
         return json.dumps(paginated_response(top_rated_tamil_movies_data, start, len(top_rated_tamil_movies_data)), indent=4)
 
 
     @mcp.tool()
-    async def get_top_rated_telugu_movies(start: int, ctx: Context) -> str:
+    async def get_top_rated_telugu_movies(start: int) -> str:
         """Top 50 rated Telugu movies on IMDb.
         Args:
             start: The starting index (0-based) to retrieve movies from.
@@ -396,14 +394,14 @@ def register_tools(mcp):
             JSON object containing 5 top rated Telugu movies starting from the specified index.
         """
         top_rated_telugu_movies_url = f"{BASE_URL}/india/top-rated-telugu-movies"
-        top_rated_telugu_movies_data = await make_imdb_request(top_rated_telugu_movies_url, {}, ctx)
+        top_rated_telugu_movies_data = await make_imdb_request(top_rated_telugu_movies_url, {})
         if not top_rated_telugu_movies_data:
             return "Unable to fetch top rated Telugu movies data."
         return json.dumps(paginated_response(top_rated_telugu_movies_data, start, len(top_rated_telugu_movies_data)), indent=4)
 
 
     @mcp.tool()
-    async def get_top_rated_indian_movies(start: int, ctx: Context) -> str:
+    async def get_top_rated_indian_movies(start: int) -> str:
         """Top 250 rated Indian movies on IMDb with pagination.
         Args:
             start: The starting index (0-based) to retrieve movies from.
@@ -411,7 +409,7 @@ def register_tools(mcp):
             JSON object containing 5 top rated Indian movies starting from the specified index.
         """
         top_rated_indian_movies_url = f"{BASE_URL}/india/top-rated-indian-movies"
-        top_rated_indian_movies_data = await make_imdb_request(top_rated_indian_movies_url, {}, ctx)
+        top_rated_indian_movies_data = await make_imdb_request(top_rated_indian_movies_url, {})
         if not top_rated_indian_movies_data:
             return "Unable to fetch top rated Indian movies data."
         return json.dumps(paginated_response(top_rated_indian_movies_data, start, len(top_rated_indian_movies_data)), indent=4)

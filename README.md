@@ -5,7 +5,6 @@
 [![Python 3.13](https://img.shields.io/badge/python-3.13-blue.svg)](https://www.python.org/downloads/)
 [![Docker](https://img.shields.io/badge/Docker-Available-blue.svg)](https://www.docker.com/)
 [![RapidAPI](https://img.shields.io/badge/RapidAPI-IMDb-orange.svg)](https://rapidapi.com/octopusteam-octopusteam-default/api/imdb236)
-[![smithery badge](https://smithery.ai/badge/@uzaysozen/imdb-mcp-server)](https://smithery.ai/server/@uzaysozen/imdb-mcp-server)
 
 [![Verified on MseeP](https://mseep.ai/badge.svg)](https://mseep.ai/app/8ed9e57d-d9e7-4a5d-ab94-4113be3ee842)
 
@@ -60,20 +59,18 @@ This server provides a comprehensive set of tools for accessing IMDb data throug
 
 ## Configuration
 
-This server requires an API key from RapidAPI for the IMDb API service:
+This server requires your own API key from RapidAPI for the IMDb API service:
 
 1. Create an account on [RapidAPI](https://rapidapi.com/)
-2. Subscribe to the [IMDb API](https://rapidapi.com/octopusteam-octopusteam-default/api/imdb236) on RapidAPI
-3. Configure the API key using one of these methods:
-   
-   **Method 1: Smithery Configuration (for HTTP mode)**
-   - When installing via Smithery, provide your API key through the Smithery configuration system
-   - The key is passed per-request, allowing for multi-user scenarios
-   
-   **Method 2: Environment Variable (for stdio mode)**
-   ```bash
-   export RAPID_API_KEY_IMDB=your_api_key_here
-   ```
+2. Subscribe to the [IMDb API](https://rapidapi.com/octopusteam-octopusteam-default/api/imdb236) on RapidAPI (a free tier is available)
+3. Copy your API key from the RapidAPI dashboard
+4. Provide it via the `RAPID_API_KEY_IMDB` environment variable, using whichever fits your setup:
+   - **MCP client config** — set it in the `env` block (see [Installation](#installation)). This is the usual way.
+   - **Shell**: `export RAPID_API_KEY_IMDB=your_api_key_here`
+   - **`.env` file**: copy `.env.example` to `.env`, then run with `uv run --env-file .env imdb-server`
+   - **HTTP / Docker**: pass `-e RAPID_API_KEY_IMDB=...` to the container
+
+The key is only needed when a tool is actually called — the server starts and lists its tools without it.
 
 ## Tools
 
@@ -175,60 +172,51 @@ Based on the search results, here are the 5 upcoming action movies that will be 
 
 ## Installation
 
-### Installing via Smithery (Recommended)
+This is a self-contained MCP server that you run locally with your own RapidAPI key.
+Smithery no longer provides free managed hosting, so there is no shared remote
+instance — clone (or `uvx`) the server and point your MCP client at it.
 
-To install IMDb Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@uzaysozen/imdb-mcp-server):
+### Option 1: Run with uvx (no clone required)
 
-```bash
-npx -y @smithery/cli install @uzaysozen/imdb-mcp-server --client claude
+If you have [uv](https://docs.astral.sh/uv/) installed, add this to your MCP client
+config (e.g. `claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "imdb_server": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/uzaysozen/imdb-mcp-server",
+        "imdb-server"
+      ],
+      "env": {
+        "RAPID_API_KEY_IMDB": "your_api_key_here"
+      }
+    }
+  }
+}
 ```
 
-This will automatically configure the server with your RapidAPI key through Smithery's configuration system.
+### Option 2: Clone and run with uv
 
-### Option 1: Using Docker
-
-1. Clone this repository
+1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/):
 ```bash
-git clone https://github.com/uzaysozen/imdb-mcp-server.git
-cd imdb-mcp-server
-```
-
-2. Build the Docker image
-```bash
-docker build -t imdb_server .
-```
-
-3. Run the Docker container
-```bash
-docker run -d -p 8081:8081 -e RAPID_API_KEY_IMDB=your_api_key_here --name imdb_server imdb_server
-```
-
-Note: The Docker container runs in HTTP mode by default on port 8081.
-
-### Option 2: Direct Python Execution (using uv)
-
-1. Clone this repository
-```bash
-git clone https://github.com/uzaysozen/imdb-mcp-server.git
-cd imdb-mcp-server
-```
-
-2. Install uv (if not already installed)
-```bash
-# On macOS and Linux
+# macOS / Linux
 curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# On Windows
+# Windows
 powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-3. Install dependencies using uv
+2. Clone this repository and install dependencies:
 ```bash
+git clone https://github.com/uzaysozen/imdb-mcp-server.git
+cd imdb-mcp-server
 uv sync
 ```
 
-4. Add this to your `claude_desktop_config.json`:
-
+3. Add this to your MCP client config:
 ```json
 {
   "mcpServers": {
@@ -248,6 +236,29 @@ uv sync
 }
 ```
 
+### Option 3: Self-host over HTTP (Docker)
+
+For a shared, always-on remote server, run it in HTTP mode behind your own HTTPS
+endpoint. This is optional and only needed if multiple clients should reach one
+instance.
+
+1. Clone this repository
+```bash
+git clone https://github.com/uzaysozen/imdb-mcp-server.git
+cd imdb-mcp-server
+```
+
+2. Build and run the Docker image
+```bash
+docker build -t imdb_server .
+docker run -d -p 8081:8081 -e RAPID_API_KEY_IMDB=your_api_key_here --name imdb_server imdb_server
+```
+
+The container runs in HTTP mode on port 8081, serving the MCP endpoint at `/mcp`.
+Put it behind a reverse proxy / platform that terminates TLS. If you want it listed
+on Smithery, register your public `https://.../mcp` URL as an external server at
+[smithery.ai/new](https://smithery.ai/new).
+
 ## Starting the Server
 
 ### Stdio Mode (Default for local development)
@@ -259,7 +270,7 @@ uv run imdb-server
 python -m imdb_mcp_server
 ```
 
-### HTTP Mode (Used by Docker and Smithery)
+### HTTP Mode (for self-hosting)
 ```bash
 # Using uv
 TRANSPORT=http uv run imdb-server
@@ -271,32 +282,32 @@ TRANSPORT=http python -m imdb_mcp_server
 TRANSPORT=http PORT=8081 uv run imdb-server
 ```
 
-After adding your chosen configuration, restart Claude Desktop to load the IMDb server. You'll then be able to use all the movie and TV show data tools in your conversations with Claude.
+After adding your chosen configuration, restart your MCP client (e.g. Claude Desktop) to load the IMDb server. You'll then be able to use all the movie and TV show data tools in your conversations.
 
 ## Technical Details
 
 The server is built on:
 - **Python 3.13+**: Modern Python runtime
-- **FastMCP**: Server implementation with HTTP and stdio transport support
+- **MCP Python SDK 2.x** (`mcp.server.mcpserver.MCPServer`): stdio and Streamable HTTP transports
 - **IMDb API via RapidAPI**: Primary data source
 - **Requests**: API communication library
-- **Smithery**: Configuration and deployment management
 - **uv**: Fast Python package manager and runner
 - **Custom in-memory caching system**: Optimized response caching with LRU eviction
 - **Smart pagination**: Limits results to 5 items per request, optimizing for AI agent consumption
 
 ### Transport Modes
 
-The server supports two transport modes:
+The server supports two transport modes, selected by the `TRANSPORT` environment variable:
 
-1. **Stdio Mode** (Default): Traditional MCP server communication via standard input/output
-   - Used for local Claude Desktop installations
-   - Configured via environment variables (`RAPID_API_KEY_IMDB`)
+1. **Stdio Mode** (`TRANSPORT` unset — the default): MCP communication over standard input/output
+   - Used for local MCP clients (Claude Desktop, Claude Code, Cursor, etc.)
+   - The API key comes from the `RAPID_API_KEY_IMDB` environment variable
 
-2. **HTTP Mode**: RESTful HTTP transport with CORS support
-   - Used for Docker deployments and Smithery
-   - Supports per-request configuration via Smithery config system
-   - Runs on port 8081 by default (configurable via `PORT` environment variable)
+2. **HTTP Mode** (`TRANSPORT=http`): Streamable HTTP transport
+   - For self-hosting a shared instance (Docker, or any platform that runs the container)
+   - Serves the MCP endpoint at `/mcp`
+   - Single-tenant: the API key comes from `RAPID_API_KEY_IMDB` on the server
+   - Binds `0.0.0.0:8081` by default (`HOST` / `PORT` environment variables); run it behind a proxy that terminates TLS
 
 ### Pagination System
 
@@ -337,7 +348,7 @@ The server implements an efficient caching system to improve performance and red
 
 #### Configuration
 
-The cache size and expiration time can be adjusted in `src/main.py`:
+The cache size and expiration time can be adjusted in `src/imdb_mcp_server/cache.py`:
 
 ```python
 # Defaults: 600 seconds (10 minutes) and 100 cache keys
@@ -360,13 +371,17 @@ response_cache = ResponseCache(max_size=100, expiry_seconds=600)
 
 | Problem | Solution |
 |---------|----------|
-| API key not recognized | **Stdio mode**: Ensure the `RAPID_API_KEY_IMDB` environment variable is properly set. **HTTP mode**: Verify the `rapidApiKeyImdb` is provided in the Smithery configuration |
+| API key not recognized | Ensure `RAPID_API_KEY_IMDB` is set — in the `env` block of your MCP client config, your shell, `.env`, or `-e` on the Docker container |
+| `ModuleNotFoundError: No module named 'mcp.server.fastmcp'` | You're on an old checkout with `mcp` 2.x installed. Pull the latest (this server targets `mcp` 2.x / `MCPServer`) and run `uv sync` |
+| `HTTP 401` / `HTTP 403` from the IMDb API | Your RapidAPI key is invalid or not subscribed to the IMDb API. (Re)subscribe to the [IMDb API](https://rapidapi.com/octopusteam-octopusteam-default/api/imdb236) on RapidAPI and copy the fresh key |
+| `HTTP 404` from the IMDb API | The RapidAPI subscription is inactive or the upstream endpoint changed. Check the subscription status on your [RapidAPI dashboard](https://rapidapi.com/octopusteam-octopusteam-default/api/imdb236) |
+| The old `npx @smithery/cli install` command fails | Smithery ended free managed hosting (March 2026), so there is no shared remote instance. Install locally instead — see [Installation](#installation) |
 | Rate limit exceeded | Check your RapidAPI subscription tier and limits at [RapidAPI Dashboard](https://rapidapi.com/developer/dashboard) |
 | Timeout errors | The server has a 30-second timeout; for large requests, try limiting parameters or using pagination |
 | Empty results | Try broader search terms or check if the content exists in IMDb's database |
 | High memory usage | If running for extended periods with many unique queries, restart the server occasionally to clear the cache |
-| Port already in use | Change the port using the `PORT` environment variable (HTTP mode only): `PORT=8082 python src/main.py` |
-| Import errors | Ensure all dependencies are installed: `uv sync` or `pip install mcp[cli] requests smithery` |
+| Port already in use | Change the port using the `PORT` environment variable (HTTP mode only): `TRANSPORT=http PORT=8082 uv run imdb-server` |
+| Import errors | Ensure all dependencies are installed: `uv sync` (or `pip install "mcp[cli]>=2.1,<3" requests`) |
 | Connection refused (Docker) | Ensure the container is running: `docker ps` and check the logs: `docker logs imdb_server` |
 
 ## License

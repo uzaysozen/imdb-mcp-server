@@ -1,8 +1,9 @@
+import sys
+import threading
+import time
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from typing import Any
-import threading
-import time
 
 
 class ResponseCache:
@@ -59,7 +60,10 @@ class CacheManager:
             while True:
                 time.sleep(self.cleanup_interval.seconds)
                 self.cache.clear_expired()
-                print(f"Cache cleaned at {datetime.now().strftime('%H:%M:%S')}")
+                print(
+                    f"Cache cleaned at {datetime.now().strftime('%H:%M:%S')}",
+                    file=sys.stderr,
+                )
         
         cache_cleaner = threading.Thread(target=clear_cache_periodically, daemon=True)
         cache_cleaner.start()
@@ -69,7 +73,10 @@ class CacheManager:
         if datetime.now() - self.last_cache_cleanup > self.cleanup_interval:
             self.cache.clear_expired()
             self.last_cache_cleanup = datetime.now()
-            print(f"Cache cleaned at {datetime.now().strftime('%H:%M:%S')}")
+            print(
+                f"Cache cleaned at {datetime.now().strftime('%H:%M:%S')}",
+                file=sys.stderr,
+            )
 
 
 # Global cache manager instance
